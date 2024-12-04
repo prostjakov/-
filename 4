@@ -1,0 +1,24 @@
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $link = mysqli_connect("localhost", "your_username", "your_password", "school_management");
+    if ($link == false) {
+        print("Ошибка: Невозможно подключиться к MySQL " . mysqli_connect_error());
+    } else {
+        $name = mysqli_real_escape_string($link, $_POST['name']);
+
+        $sql = "INSERT INTO groups (name) VALUES ('$name')";
+        if (mysqli_query($link, $sql)) {
+            print("Группа добавлена успешно");
+        } else {
+            print("Произошла ошибка при добавлении группы");
+        }
+        mysqli_close($link);
+    }
+}
+?>
+
+<form action="" method="post">
+    <label for="name">Название группы:</label>
+    <input type="text" id="name" name="name"><br><br>
+    <input type="submit" value="Добавить">
+</form>
