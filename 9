@@ -1,0 +1,16 @@
+<?php
+include('db_connection.php');
+
+$student_id = $_GET['id']; // или $_POST['id'] в зависимости от метода передачи
+
+$sql = "DELETE FROM students WHERE id = :student_id";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':student_id', $student_id);
+$stmt->execute();
+
+if ($stmt->rowCount() > 0) {
+    echo "Студент удален успешно!";
+} else {
+    echo "Ошибка удаления студента.";
+}
+?>
