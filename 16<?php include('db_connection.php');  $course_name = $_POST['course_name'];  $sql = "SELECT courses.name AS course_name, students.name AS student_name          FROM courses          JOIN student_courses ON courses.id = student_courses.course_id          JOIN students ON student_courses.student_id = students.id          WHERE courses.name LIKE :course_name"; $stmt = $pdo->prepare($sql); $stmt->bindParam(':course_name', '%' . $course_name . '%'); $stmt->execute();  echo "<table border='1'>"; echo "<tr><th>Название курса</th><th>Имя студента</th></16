@@ -1,0 +1,29 @@
+<?php
+include('db_connection.php');
+
+$course_name = $_POST['course_name'];
+
+$sql = "SELECT courses.name AS course_name, students.name AS student_name 
+        FROM courses 
+        JOIN student_courses ON courses.id = student_courses.course_id 
+        JOIN students ON student_courses.student_id = students.id 
+        WHERE courses.name LIKE :course_name";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':course_name', '%' . $course_name . '%');
+$stmt->execute();
+
+echo "<table border='1'>";
+echo "<tr><th>Название курса</th><th>Имя студента</th></tr>";
+
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    echo "<tr><td>" . $row['course_name'] . "</td><td>" . $row['student_name'] . "</td></tr>";
+}
+
+echo "</table>";
+?>
+
+<form action="search_course.php" method="post">
+    <label for="course_name">Название курса:</label>
+    <input type="text" id="course_name" name="course_name"><br><br>
+    <input type="submit" value="Поиск">
+</form>
