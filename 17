@@ -1,0 +1,23 @@
+<?php
+include('db_connection.php');
+
+$course_id = $_GET['id']; // или $_POST['id'] в зависимости от метода передачи
+
+// Удаление записей из student_courses
+$sql = "DELETE FROM student_courses WHERE course_id = :course_id";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':course_id', $course_id);
+$stmt->execute();
+
+// Удаление курса
+$sql = "DELETE FROM courses WHERE id = :course_id";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':course_id', $course_id);
+$stmt->execute();
+
+if ($stmt->rowCount() > 0) {
+    echo "Курс удален успешно!";
+} else {
+    echo "Ошибка удаления курса.";
+}
+?>
