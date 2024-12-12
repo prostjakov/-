@@ -1,0 +1,28 @@
+<form action="search_student.php" method="post">
+    <label for="name">Имя студента:</label>
+    <input type="text" id="name" name="name"><br><br>
+    <input type="submit" value="Поиск">
+</form>
+
+<?php
+include('db_connection.php');
+
+$name = $_POST['name'];
+
+$sql = "SELECT students.name AS student_name, groups.name AS group_name 
+        FROM students 
+        LEFT JOIN groups ON students.group_id = groups.id 
+        WHERE students.name LIKE :name";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':name', '%' . $name . '%');
+$stmt->execute();
+
+echo "<table border='1'>";
+echo "<tr><th>Имя студента</th><th>Название группы</th></tr>";
+
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    echo "<tr><td>" . $row['student_name'] . "</td><td>" . $row['group_name'] . "</td></tr>";
+}
+
+echo "</table>";
+?>
