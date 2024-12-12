@@ -1,0 +1,22 @@
+<?php
+include('db_connection.php');
+
+$teacher_name = $_POST['teacher_name'];
+
+$sql = "INSERT INTO teachers (name) VALUES (:teacher_name)";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':teacher_name', $teacher_name);
+$stmt->execute();
+
+if ($stmt->rowCount() > 0) {
+    echo "Преподаватель добавлен успешно!";
+} else {
+    echo "Ошибка добавления преподавателя.";
+}
+?>
+
+<form action="add_teacher.php" method="post">
+    <label for="teacher_name">Имя преподавателя:</label>
+    <input type="text" id="teacher_name" name="teacher_name"><br><br>
+    <input type="submit" value="Добавить преподавателя">
+</form>
