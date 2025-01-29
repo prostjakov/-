@@ -1,0 +1,19 @@
+<?php
+$jsonContent = file_get_contents('books.json');
+
+$books = json_decode($jsonContent, true);
+
+function filterBooksAfter2000($book) {
+    return $book['year'] > 2000;
+}
+
+$filteredBooks = array_filter($books, 'filterBooksAfter2000');
+
+echo "Книги, изданные после 2000 года:\n";
+foreach ($filteredBooks as $book) {
+    echo "Название: " . $book['title'] . "\n";
+    echo "Автор: " . $book['author'] . "\n";
+    echo "Год издания: " . $book['year'] . "\n";
+    echo "------------------------\n";
+}
+?>
