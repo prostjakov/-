@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Погода в городе</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        input, button {
+            font-size: 16px;
+            padding: 5px;
+        }
+        #weather {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Погода в городе</h1>
+    <input type="text" id="city" placeholder="Введите город">
+    <button onclick="getWeather()">Узнать погоду</button>
+    <div id="weather"></div>
+
+    <script>
+        function getWeather() {
+            const city = document.getElementById('city').value;
+            const apiKey = 'ВАШ_API_КЛЮЧ'; // Замените на ваш API ключ
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=ru&appid=${apiKey}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const weatherDiv = document.getElementById('weather');
+                    const temperature = Math.round(data.main.temp);
+                    const description = data.weather.description;
+                    weatherDiv.innerHTML = `
+                        <h2>Погода в городе ${data.name}</h2>
+                        <p>Температура: ${temperature}°C</p>
+                        <p>Описание: ${description}</p>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    document.getElementById('weather').innerHTML = 'Произошла ошибка при получении данных о погоде.';
+                });
+        }
+    </script>
+</body>
+</html>
