@@ -1,5 +1,36 @@
+<?php
+
+$apiKey = "ВАШ_API_КЛЮЧ";
+
+if(isset($_POST['city'])) {
+    $city = $_POST['city'];
+    $apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=" . urlencode($city) . "&lang=ru&units=metric&APPID=" . $apiKey;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_VERBOSE, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    $data = json_decode($response);
+
+    if($data->cod == 200) {
+        $temp = $data->main->temp;
+        $description = $data->weather->description;
+        $humidity = $data->main->humidity;
+        $windSpeed = $data->wind->speed;
+        $icon = $data->weather->icon;
+    } else {
+        $error = "Город не найден. Пожалуйста, проверьте правильность написания.";
+    }
+}
+?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,44 +42,31 @@
             margin: 0 auto;
             padding: 20px;
         }
+        form {
+            margin-bottom: 20px;
+        }
         input, button {
             font-size: 16px;
             padding: 5px;
-        }
-        #weather {
-            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Погода в городе</h1>
-    <input type="text" id="city" placeholder="Введите город">
-    <button onclick="getWeather()">Узнать погоду</button>
-    <div id="weather"></div>
+    <form method="post">
+        <input type="text" name="city" placeholder="Введите город" required>
+        <button type="submit">Узнать погоду</button>
+    </form>
 
-    <script>
-        function getWeather() {
-            const city = document.getElementById('city').value;
-            const apiKey = 'ВАШ_API_КЛЮЧ'; // Замените на ваш API ключ
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=ru&appid=${apiKey}`;
-
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    const weatherDiv = document.getElementById('weather');
-                    const temperature = Math.round(data.main.temp);
-                    const description = data.weather.description;
-                    weatherDiv.innerHTML = `
-                        <h2>Погода в городе ${data.name}</h2>
-                        <p>Температура: ${temperature}°C</p>
-                        <p>Описание: ${description}</p>
-                    `;
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    document.getElementById('weather').innerHTML = 'Произошла ошибка при получении данных о погоде.';
-                });
-        }
-    </script>
+    <?php if(isset($temp)): ?>
+        <h2>Погода в городе <?php echo $city; ?></h2>
+        <p>Температура: <?php echo $temp; ?>°C</p>
+        <p>Описание: <?php echo $description; ?></p>
+        <p>Влажность: <?php echo $humidity; ?>%</p>
+        <p>Скорость ветра: <?php echo $windSpeed; ?> м/с</p>
+        <img src="http://openweathermap.org/img/wn/<?php echo $icon; ?>@2x.png" alt="Погодный icon">
+    <?php elseif(isset($error)): ?>
+        <p style="color: red;"><?php echo $error; ?></p>
+    <?php endif; ?>
 </body>
 </html>
